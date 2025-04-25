@@ -7,7 +7,7 @@ index eb8df0d..78be50e 100644
      public function getCacheDir(): string
      {
 -        return $this->getProjectDir().'/var/cache/'.$this->environment;
-+        return '/var/cache/strichliste'.$this->environment;
++        return '/var/cache/strichliste/'.$this->environment;
      }
  
      public function getLogDir(): string
