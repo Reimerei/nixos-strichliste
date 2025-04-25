@@ -55,6 +55,11 @@ in
     };
     users.groups.strichliste = { };
 
+    systemd.tmpfiles.rules = [
+      "d /var/log/strichliste 0755 strichliste strichliste"
+      "d /var/cache/strichliste 0755 strichliste strichliste"
+    ];
+
     systemd.services.strichliste-migrate = {
       description = "Strichliste migrations";
       after = [
