@@ -15,7 +15,7 @@ let
       # hash = "sha256-BlV7tynQKM2rEmnGjO4NuiutBVMDuT4di2oJjdz2suU=";
       hash = "sha256-mMubUzyPZ0AWw8XuHJwIDGtsp1YkxEfsNwDJD5OIEig=";
     };
-    patches = [ ./composer.json.patch ];
+    patches = [ ./composer.json.patch ./Kernel.php.patch ];
   };
 in
 php.buildComposerProject (finalAttrs: {
