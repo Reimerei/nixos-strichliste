@@ -1,8 +1,8 @@
 diff --git a/config/packages/doctrine.yaml b/config/packages/doctrine.yaml
-index 26c31f9..61b9cf4 100644
+index 26c31f9..9ae9187 100644
 --- a/config/packages/doctrine.yaml
 +++ b/config/packages/doctrine.yaml
-@@ -8,14 +8,14 @@ parameters:
+@@ -8,14 +8,15 @@ parameters:
  doctrine:
      dbal:
          # configure these for your database server
@@ -20,7 +20,8 @@ index 26c31f9..61b9cf4 100644
 +        #     collate: utf8mb4_unicode_ci
 
 -        url: '%env(resolve:DATABASE_URL)%'
-+        # url: 'postgres:///strichliste
++        # url: 'postgres:///strichliste?host=/run/postgresql'
      orm:
          auto_generate_proxy_classes: '%kernel.debug%'
          naming_strategy: doctrine.orm.naming_strategy.underscore
+         
