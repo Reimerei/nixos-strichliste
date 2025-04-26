@@ -9,7 +9,7 @@ index 26c31f9..9ae9187 100644
 -        driver: 'pdo_mysql'
 -        server_version: '5.7'
 +        dbname: 'strichliste'
-+        driver: 'pgsql'
++        driver: 'pdo_pgsql'
 +        server_version: '16.8'
          charset: utf8mb4
 -        default_table_options:
