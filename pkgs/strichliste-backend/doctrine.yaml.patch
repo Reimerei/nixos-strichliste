@@ -9,7 +9,7 @@ index 26c31f9..1925833 100644
 -        driver: 'pdo_mysql'
 -        server_version: '5.7'
 +        dbname: strichliste
-+        unix_sockeet: '/run/postgresql'
++        unix_socket: '/run/postgresql'
 +        driver: 'pdo_pgsql'
 +        server_version: '16.8'
          charset: utf8mb4
@@ -25,4 +25,4 @@ index 26c31f9..1925833 100644
      orm:
          auto_generate_proxy_classes: '%kernel.debug%'
          naming_strategy: doctrine.orm.naming_strategy.underscore
-         
+
