@@ -12,7 +12,8 @@ index 26c31f9..1925833 100644
 +        host: '/run/postgresql'
 +        driver: 'pdo_pgsql'
 +        server_version: '16.8'
-         charset: utf8mb4
+-        charset: utf8mb4
++        charset: utf8
 -        default_table_options:
 -            charset: utf8mb4
 -            collate: utf8mb4_unicode_ci
@@ -21,7 +22,7 @@ index 26c31f9..1925833 100644
 +        #     collate: utf8mb4_unicode_ci
 
 -        url: '%env(resolve:DATABASE_URL)%'
-+        # url: 'postgres:///strichliste?host=/run/postgresql'
++        url: 'postgresql://strichliste@strichliste?host=/run/postgresql'
      orm:
          auto_generate_proxy_classes: '%kernel.debug%'
          naming_strategy: doctrine.orm.naming_strategy.underscore
