@@ -12,9 +12,9 @@ index 26c31f9..f5802da 100644
 -        default_table_options:
 -            charset: utf8mb4
 -            collate: utf8mb4_unicode_ci
-+        # driver: 'pdo_mysql'
-+        # server_version: '5.7'
-+        # charset: utf8mb4
++        driver: 'pdo_pgsql'
++        server_version: '16.8'
++        charset: utf8mb4
 +        # default_table_options:
 +        #     charset: utf8mb4
 +        #     collate: utf8mb4_unicode_ci
