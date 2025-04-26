@@ -19,13 +19,13 @@ let
   environment = {
     "APP_ENV" = "prod";
     # "APP_SECRET" =
-    "DATABASE_URL" = "postgresql:///strichliste?host=/run/postgresql";
+    "DATABASE_URL" = "postgres:///strichliste?host=/run/postgresql?serverVersion=16.8";
     "CORS_ALLOW_ORIGIN" = "^https?://localhost(:[0-9]+)?$";
   };
 in
 {
   options.services.strichliste = {
-    enable = mkEnableOption "Access to Memory (AtoM) service";
+    enable = mkEnableOption "Strichliste service";
     domain = mkOption {
       description = "The domain name serving your Strichliste instance.";
       example = "strichliste.example.org";
