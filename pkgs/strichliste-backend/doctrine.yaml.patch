@@ -19,7 +19,7 @@ index 26c31f9..61b9cf4 100644
 +        #     collate: utf8mb4_unicode_ci
 
 -        url: '%env(resolve:DATABASE_URL)%'
-+        url: 'postgres:///strichliste?host=/run/postgresql'
++        url: 'postgres:///strichliste
      orm:
          auto_generate_proxy_classes: '%kernel.debug%'
          naming_strategy: doctrine.orm.naming_strategy.underscore
