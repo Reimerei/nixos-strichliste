@@ -78,6 +78,7 @@ in
         Group = "strichliste";
       };
       script = ''
+        rm -rf /var/cache/strichliste/*
         php bin/console doctrine:schema:create
       '';
     };
