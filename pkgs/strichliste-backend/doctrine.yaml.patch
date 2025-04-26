@@ -8,8 +8,8 @@ index 26c31f9..9ae9187 100644
          # configure these for your database server
 -        driver: 'pdo_mysql'
 -        server_version: '5.7'
-+        dbname: strichliste
-+        driver: 'pdo_pgsql'
++        dbname: 'strichliste'
++        driver: 'pgsql'
 +        server_version: '16.8'
          charset: utf8mb4
 -        default_table_options:
@@ -24,4 +24,3 @@ index 26c31f9..9ae9187 100644
      orm:
          auto_generate_proxy_classes: '%kernel.debug%'
          naming_strategy: doctrine.orm.naming_strategy.underscore
-         
