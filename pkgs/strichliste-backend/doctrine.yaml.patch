@@ -8,6 +8,7 @@ index 26c31f9..61b9cf4 100644
          # configure these for your database server
 -        driver: 'pdo_mysql'
 -        server_version: '5.7'
++        dbname: strichliste
 +        driver: 'pdo_pgsql'
 +        server_version: '16.8'
          charset: utf8mb4
@@ -19,7 +20,7 @@ index 26c31f9..61b9cf4 100644
 +        #     collate: utf8mb4_unicode_ci
 
 -        url: '%env(resolve:DATABASE_URL)%'
-+        url: 'postgres:///strichliste
++        # url: 'postgres:///strichliste
      orm:
          auto_generate_proxy_classes: '%kernel.debug%'
          naming_strategy: doctrine.orm.naming_strategy.underscore
