@@ -19,7 +19,7 @@ let
   environment = {
     "APP_ENV" = "prod";
     # "APP_SECRET" =
-    "DATABASE_URL" = "postgres:///strichliste?host=/run/postgresql";
+    "DATABASE_URL" = "postgresql:///strichliste?host=/run/postgresql";
     "CORS_ALLOW_ORIGIN" = "^https?://localhost(:[0-9]+)?$";
   };
 in
