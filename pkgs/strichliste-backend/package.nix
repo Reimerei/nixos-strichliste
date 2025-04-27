@@ -4,6 +4,7 @@
   php81,
   fetchFromGitHub,
   yq,
+  strichliste-web-frontend,
   # The Database Abstraction Layer configuration for the doctrine ORM
   dbal ? null,
 }:
@@ -30,13 +31,17 @@ php.buildComposerProject (finalAttrs: {
   version = "1.8.2";
   inherit src;
 
+  vendorHash = "sha256-GKf7Sy655c1L0+cLhf81MsJm0v0NEXc9GRwIzeccrPw=";
+
   postPatch = optionalString (!isNull dbal) ''
     TEMP=$(mktemp)
     ${lib.getExe yq} '.doctrine.dbal = ${builtins.toJSON dbal}' config/packages/doctrine.yaml > $TEMP
     mv $TEMP config/packages/doctrine.yaml
   '';
 
-  vendorHash = "sha256-GKf7Sy655c1L0+cLhf81MsJm0v0NEXc9GRwIzeccrPw=";
+  postInstall = ''
+    cp -r ${strichliste-web-frontend}/* $out/share/php/strichliste-backend/public/
+  '';
 
   passthru = { inherit php; };
 
