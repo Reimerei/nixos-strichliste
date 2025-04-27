@@ -26,12 +26,11 @@ let
     dbname = "strichliste";
     host = "/run/postgresql";
   };
-  finalPackage = pkgs.strichliste-backend.override { inherit dbal; };
-
+  finalPackage = pkgs.strichliste-backend.override {
+    inherit dbal;
+  };
   environment = {
     "APP_ENV" = "prod";
-    "APP_SECRET" = "afcb8ed6bf80cf0d8d9196390e06a408"; # TODO
-    # "CORS_ALLOW_ORIGIN" = "^https?://${config.services.strichliste.domain}$";
   };
 in
 {

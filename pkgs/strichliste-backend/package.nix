@@ -32,8 +32,6 @@ php.buildComposerProject (finalAttrs: {
 
   postPatch = optionalString (!isNull dbal) ''
     TEMP=$(mktemp)
-    echo '${(builtins.toJSON dbal)}'
-    set -x
     ${lib.getExe yq} '.doctrine.dbal = ${builtins.toJSON dbal}' config/packages/doctrine.yaml > $TEMP
     mv $TEMP config/packages/doctrine.yaml
   '';
