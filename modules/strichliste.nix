@@ -5,17 +5,10 @@
   ...
 }:
 let
-  inherit (builtins)
-    toFile
-    toJSON
-    ;
   inherit (lib)
     mkEnableOption
     mkOption
     types
-    mapAttrs
-    mkDefault
-    getExe
     ;
   cfg = config.services.strichliste;
   fpm = config.services.phpfpm.pools.strichliste;
@@ -81,15 +74,9 @@ in
     };
     users.groups.strichliste = { };
 
-    systemd.tmpfiles.rules = [
-      "d /var/log/strichliste 0755 strichliste strichliste"
-      "d /var/cache/strichliste 0755 strichliste strichliste"
-    ];
-
     systemd.services.strichliste-migrate = {
       description = "Strichliste migrations";
       after = [
-        "network.target"
         "postgresql.service"
       ];
       path = [
@@ -100,6 +87,8 @@ in
         Type = "oneshot";
         StateDirectory = "strichliste";
         WorkingDirectory = "${finalPackage}/share/php/strichliste-backend/";
+        CacheDirectory = "strichliste";
+        LogsDirectory = "strichliste";
         User = "strichliste";
         Group = "strichliste";
       };
@@ -127,10 +116,7 @@ in
       };
     };
     systemd.services."phpfpm-strichliste" = {
-      after = [
-        "postgresql.service"
-        "strichliste-migrate.service"
-      ];
+      after = [ "strichliste-migrate.service" ];
       requires = [ "strichliste-migrate.service" ];
       restartTriggers = [ finalPackage ];
     };
@@ -138,7 +124,7 @@ in
     services.nginx.enable = true;
     # From https://github.com/strichliste/strichliste-backend/blob/861c954a50f214eaaa6e5dd940f0e98c8349e0a9/contrib/ansible/files/nginx.conf
     services.nginx.virtualHosts."${cfg.domain}" = {
-      root = "${pkgs.strichliste-backend}/share/php/strichliste-backend/public/";
+      root = "${finalPackage}/share/php/strichliste-backend/public/";
       extraConfig = ''
         index index.php;
         client_max_body_size 100m;

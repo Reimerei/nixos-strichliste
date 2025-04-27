@@ -26,7 +26,6 @@
     in
 
     {
-
       overlays.default = final: prev: {
         strichliste-backend = prev.callPackage ./pkgs/strichliste-backend/package.nix { };
         strichliste-web-frontend = prev.callPackage ./pkgs/strichliste-web-frontend/package.nix { };
@@ -40,7 +39,7 @@
         {
           backend = pkgs.strichliste-backend;
           frontend = pkgs.strichliste-web-frontend;
-          default = pkgs.strichliste-web-frontend;
+          default = pkgs.strichliste-backend;
         }
       );
 

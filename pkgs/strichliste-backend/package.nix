@@ -14,25 +14,25 @@ let
   inherit (builtins) toFile toJSON;
   inherit (lib) optionalString getExe;
   php = php81;
+  version = "1.8.2";
   src = applyPatches {
     src = fetchFromGitHub {
       owner = "strichliste";
       repo = "strichliste-backend";
-      # tag = "v${finalAttrs.version}";
-      rev = "861c954a50f214eaaa6e5dd940f0e98c8349e0a9";
-      # hash = "sha256-BlV7tynQKM2rEmnGjO4NuiutBVMDuT4di2oJjdz2suU=";
-      hash = "sha256-mMubUzyPZ0AWw8XuHJwIDGtsp1YkxEfsNwDJD5OIEig=";
+      tag = "v${version}";
+      hash = "sha256-BlV7tynQKM2rEmnGjO4NuiutBVMDuT4di2oJjdz2suU=";
     };
     patches = [
+      # Fixed composer.json and composer.lock so that `composer validate` succeeds
       ./composer.json.patch
+      # Put cache and log directory into better places
       ./Kernel.php.patch
     ];
   };
 in
-php.buildComposerProject (finalAttrs: {
+php.buildComposerProject {
   pname = "strichliste-backend";
-  version = "1.8.2";
-  inherit src;
+  inherit version src;
 
   vendorHash = "sha256-GKf7Sy655c1L0+cLhf81MsJm0v0NEXc9GRwIzeccrPw=";
 
@@ -70,4 +70,4 @@ php.buildComposerProject (finalAttrs: {
     maintainers = with lib.maintainers; [ erictapen ];
   };
 
-})
+}
