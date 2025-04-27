@@ -111,7 +111,7 @@ in
     services.nginx.enable = true;
     # From https://github.com/strichliste/strichliste-backend/blob/master/examples/nginx.conf
     services.nginx.virtualHosts."${cfg.domain}" = {
-      root = "${pkgs.strichliste-web-frontend}/lib/node_modules/strichliste-web/public";
+      root = "${pkgs.strichliste-web-frontend}";
       locations = {
         "/".tryFiles = "$uri /index.php$is_args$args";
         "~ ^/index\\.php(/|$)".extraConfig = ''

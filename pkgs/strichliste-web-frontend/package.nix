@@ -5,7 +5,6 @@
   nodejs,
   yarnConfigHook,
   yarnBuildHook,
-  yarnInstallHook,
   fetchYarnDeps,
 }:
 
@@ -29,9 +28,14 @@ stdenv.mkDerivation (finalAttrs: {
     nodejs
     yarnConfigHook
     yarnBuildHook
-    yarnInstallHook
   ];
 
   env.NODE_OPTIONS = "--openssl-legacy-provider";
+
+  installPhase = ''
+    runHook preInstall
+    cp -r build $out
+    runHook postInstall
+  '';
 
 })
