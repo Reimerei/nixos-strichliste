@@ -3,8 +3,12 @@
   applyPatches,
   php81,
   fetchFromGitHub,
+  yq,
+  # The Database Abstraction Layer configuration for the doctrine ORM
+  dbal ? null,
 }:
 let
+  inherit (lib) optionalString;
   php = php81;
   src = applyPatches {
     src = fetchFromGitHub {
@@ -18,7 +22,6 @@ let
     patches = [
       ./composer.json.patch
       ./Kernel.php.patch
-      ./doctrine.yaml.patch
     ];
   };
 in
@@ -27,16 +30,24 @@ php.buildComposerProject (finalAttrs: {
   version = "1.8.2";
   inherit src;
 
+  postPatch = optionalString (!isNull dbal) ''
+    TEMP=$(mktemp)
+    echo '${(builtins.toJSON dbal)}'
+    set -x
+    ${lib.getExe yq} '.doctrine.dbal = ${builtins.toJSON dbal}' config/packages/doctrine.yaml > $TEMP
+    mv $TEMP config/packages/doctrine.yaml
+  '';
+
   vendorHash = "sha256-GKf7Sy655c1L0+cLhf81MsJm0v0NEXc9GRwIzeccrPw=";
 
   passthru = { inherit php; };
 
-  meta = with lib; {
+  meta = {
     description = "Manage your kiosk in a breeze";
     homepage = "https://www.strichliste.org/";
-    license = with licenses; [ mit ];
-    platforms = platforms.linux;
-    maintainers = with maintainers; [ erictapen ];
+    license = with lib.licenses; [ mit ];
+    platforms = lib.platforms.linux;
+    maintainers = with lib.maintainers; [ erictapen ];
   };
 
 })

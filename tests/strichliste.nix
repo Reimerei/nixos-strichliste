@@ -17,7 +17,6 @@ in
     {
       imports = modules;
 
-      # virtualisation.memorySize = 4096;
       services.strichliste = {
         enable = true;
         domain = "${serverDomain}";
@@ -52,6 +51,6 @@ in
       start_all()
       server.wait_for_unit("phpfpm-strichliste.service")
       client.wait_for_unit("multi-user.target")
-      client.succeed("curl --fail https://${serverDomain}")
+      client.succeed("curl --fail https://${serverDomain}/index.html")
     '';
 }

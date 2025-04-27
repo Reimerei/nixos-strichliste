@@ -5,16 +5,27 @@
   ...
 }:
 let
+  inherit (builtins)
+    toFile
+    toJSON;
   inherit (lib)
     mkEnableOption
     mkOption
     types
     mapAttrs
     mkDefault
+    getExe
     ;
   cfg = config.services.strichliste;
   fpm = config.services.phpfpm.pools.strichliste;
-  package = pkgs.strichliste-backend;
+  dbal = {
+      driver = "pdo_pgsql";
+      charset = "utf8";
+      user = "strichliste";
+      dbname = "strichliste";
+      host = "/run/postgresql";
+    };
+  finalPackage = pkgs.strichliste-backend.override { inherit dbal; };
 
   environment = {
     "APP_ENV" = "prod";
@@ -50,7 +61,7 @@ in
       isSystemUser = true;
       group = "strichliste";
       home = "/var/lib/strichliste";
-      packages = [ package.php ];
+      packages = [ finalPackage.php ];
     };
     users.groups.strichliste = { };
 
@@ -66,13 +77,13 @@ in
         "postgresql.service"
       ];
       path = [
-        package.php
+        finalPackage.php
       ];
       inherit environment;
       serviceConfig = {
         Type = "oneshot";
         StateDirectory = "strichliste";
-        WorkingDirectory = "${package}/share/php/strichliste-backend/";
+        WorkingDirectory = "${finalPackage}/share/php/strichliste-backend/";
         User = "strichliste";
         Group = "strichliste";
       };
@@ -85,7 +96,7 @@ in
     services.phpfpm.pools.strichliste = {
       user = "strichliste";
       group = "strichliste";
-      phpPackage = package.php;
+      phpPackage = finalPackage.php;
       phpEnv = { };
       settings = {
         "listen.owner" = config.services.nginx.user;
