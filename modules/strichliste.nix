@@ -19,6 +19,7 @@ let
     ;
   cfg = config.services.strichliste;
   fpm = config.services.phpfpm.pools.strichliste;
+  settingsFormat = pkgs.formats.yaml { };
   dbal = {
     driver = "pdo_pgsql";
     charset = "utf8";
@@ -28,6 +29,7 @@ let
   };
   finalPackage = pkgs.strichliste-backend.override {
     inherit dbal;
+    inherit (cfg) settings;
   };
   environment = {
     "APP_ENV" = "prod";
@@ -41,7 +43,21 @@ in
       example = "strichliste.example.org";
       type = types.str;
     };
-    settings = { };
+    settings = mkOption {
+      type = types.submodule {
+        freeformType = settingsFormat.type;
+        options = { };
+      };
+      default = { };
+      example = {
+        idleTimeout = 40000;
+      };
+      description = ''
+        Configuration that is used to extend the default YAML file. See
+        <https://github.com/strichliste/strichliste-backend/blob/master/docs/Config.md>
+        for more.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -132,7 +148,7 @@ in
         "~ \\.php" = {
           tryFiles = "$uri /index.php =404";
           extraConfig = ''
-            fastcgi_pass unix:${config.services.phpfpm.pools.strichliste.socket};
+            fastcgi_pass unix:${fpm.socket};
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
             fastcgi_param SCRIPT_NAME $fastcgi_script_name;
             fastcgi_split_path_info ^(.+\.php)(/.+)$;

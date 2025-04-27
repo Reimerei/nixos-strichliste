@@ -7,9 +7,12 @@
   strichliste-web-frontend,
   # The Database Abstraction Layer configuration for the doctrine ORM
   dbal ? null,
+  # Strichliste settings
+  settings ? { },
 }:
 let
-  inherit (lib) optionalString;
+  inherit (builtins) toFile toJSON;
+  inherit (lib) optionalString getExe;
   php = php81;
   src = applyPatches {
     src = fetchFromGitHub {
@@ -33,11 +36,25 @@ php.buildComposerProject (finalAttrs: {
 
   vendorHash = "sha256-GKf7Sy655c1L0+cLhf81MsJm0v0NEXc9GRwIzeccrPw=";
 
-  postPatch = optionalString (!isNull dbal) ''
-    TEMP=$(mktemp)
-    ${lib.getExe yq} '.doctrine.dbal = ${builtins.toJSON dbal}' config/packages/doctrine.yaml > $TEMP
-    mv $TEMP config/packages/doctrine.yaml
-  '';
+  postPatch =
+    let
+      settingsExtension = toFile "strichliste.yaml" (toJSON {
+        parameters.strichliste = settings;
+      });
+    in
+    ''
+      TEMP=$(mktemp)
+      # Extend the default settings with custom ones
+      ${getExe yq} -s '.[0] * .[1]' config/strichliste.yaml ${settingsExtension} > $TEMP
+      mv $TEMP config/strichliste.yaml
+      cat config/strichliste.yaml
+    ''
+    + optionalString (!isNull dbal) ''
+      TEMP=$(mktemp)
+      # Replace the default database config with a custom one
+      ${getExe yq} '.doctrine.dbal = ${toJSON dbal}' config/packages/doctrine.yaml > $TEMP
+      mv $TEMP config/packages/doctrine.yaml
+    '';
 
   postInstall = ''
     cp -r ${strichliste-web-frontend}/* $out/share/php/strichliste-backend/public/

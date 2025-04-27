@@ -20,6 +20,7 @@ in
       services.strichliste = {
         enable = true;
         domain = "${serverDomain}";
+        settings.common.idleTimeout = 123456;
       };
 
       services.nginx.virtualHosts."${serverDomain}" = {
@@ -48,9 +49,15 @@ in
   testScript =
     { nodes }:
     ''
+      import json
+
       start_all()
       server.wait_for_unit("phpfpm-strichliste.service")
       client.wait_for_unit("multi-user.target")
       client.succeed("curl --fail https://${serverDomain} | grep Strichliste")
+      settings_str = client.succeed("curl --fail https://${serverDomain}/api/settings")
+      settings = json.loads(settings_str)["settings"]
+      assert settings["common"]["idleTimeout"] == 123456
+      assert not settings["paypal"]["enabled"]
     '';
 }
