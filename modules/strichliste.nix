@@ -7,7 +7,8 @@
 let
   inherit (builtins)
     toFile
-    toJSON;
+    toJSON
+    ;
   inherit (lib)
     mkEnableOption
     mkOption
@@ -19,18 +20,18 @@ let
   cfg = config.services.strichliste;
   fpm = config.services.phpfpm.pools.strichliste;
   dbal = {
-      driver = "pdo_pgsql";
-      charset = "utf8";
-      user = "strichliste";
-      dbname = "strichliste";
-      host = "/run/postgresql";
-    };
+    driver = "pdo_pgsql";
+    charset = "utf8";
+    user = "strichliste";
+    dbname = "strichliste";
+    host = "/run/postgresql";
+  };
   finalPackage = pkgs.strichliste-backend.override { inherit dbal; };
 
   environment = {
     "APP_ENV" = "prod";
-    # "APP_SECRET" =
-    "CORS_ALLOW_ORIGIN" = "^https?://localhost(:[0-9]+)?$";
+    "APP_SECRET" = "afcb8ed6bf80cf0d8d9196390e06a408"; # TODO
+    # "CORS_ALLOW_ORIGIN" = "^https?://${config.services.strichliste.domain}$";
   };
 in
 {
@@ -97,7 +98,7 @@ in
       user = "strichliste";
       group = "strichliste";
       phpPackage = finalPackage.php;
-      phpEnv = { };
+      phpEnv = environment;
       settings = {
         "listen.owner" = config.services.nginx.user;
         "listen.group" = config.services.nginx.group;
@@ -116,35 +117,30 @@ in
         "strichliste-migrate.service"
       ];
       requires = [ "strichliste-migrate.service" ];
-      inherit environment;
+      restartTriggers = [ finalPackage ];
     };
 
     services.nginx.enable = true;
-    # From https://github.com/strichliste/strichliste-backend/blob/master/examples/nginx.conf
+    # From https://github.com/strichliste/strichliste-backend/blob/861c954a50f214eaaa6e5dd940f0e98c8349e0a9/contrib/ansible/files/nginx.conf
     services.nginx.virtualHosts."${cfg.domain}" = {
-      root = "${pkgs.strichliste-web-frontend}";
+      root = "${pkgs.strichliste-backend}/share/php/strichliste-backend/public/";
+      extraConfig = ''
+        index index.php;
+        client_max_body_size 100m;
+      '';
       locations = {
-        "/".tryFiles = "$uri /index.php$is_args$args";
-        "~ ^/index\\.php(/|$)".extraConfig = ''
-          fastcgi_split_path_info ^(.+\.php)(/.*)$;
-          include ${config.services.nginx.package}/conf/fastcgi.conf;
-
-          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-          fastcgi_param PATH_INFO $fastcgi_path_info;
-
-          #Avoid sending the security headers twice
-          fastcgi_param modHeadersAvailable true;
-          fastcgi_param front_controller_active true;
-          # fastcgi_pass php-handler;
-          fastcgi_intercept_errors on;
-          fastcgi_request_buffering off;
-
-          # Prevents URIs that include the front controller. This will 404:
-          # http://domain.tld/index.php/some-path
-          # Remove the internal directive to allow URIs like this
-          internal;
-        '';
-        "~ \\.php$".extraConfig = "return 404;";
+        "/".tryFiles = "$uri $uri/ /index.php$is_args$args";
+        "~ \\.php" = {
+          tryFiles = "$uri /index.php =404";
+          extraConfig = ''
+            fastcgi_pass unix:${config.services.phpfpm.pools.strichliste.socket};
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_index index.php;
+            include ${config.services.nginx.package}/conf/fastcgi.conf;
+          '';
+        };
       };
       forceSSL = true;
       enableACME = true;
