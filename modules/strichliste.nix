@@ -95,7 +95,7 @@ in
       };
       script = ''
         rm -rf /var/cache/strichliste/*
-        TABLE_COUNT=$(psql -c "SELECT COUNT(*) FROM pg_tables WHERE schemaname = 'public';" -d strichliste)
+        TABLE_COUNT=$(psql -tAc "SELECT COUNT(*) FROM pg_tables WHERE schemaname = 'public';" -d strichliste)
         if [ "$TABLE_COUNT" -eq 0 ]; then
           php bin/console doctrine:schema:create
         fi

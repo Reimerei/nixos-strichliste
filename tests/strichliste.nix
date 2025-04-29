@@ -55,9 +55,26 @@ in
       server.wait_for_unit("phpfpm-strichliste.service")
       client.wait_for_unit("multi-user.target")
       client.succeed("curl --fail https://${serverDomain} | grep Strichliste")
+
       settings_str = client.succeed("curl --fail https://${serverDomain}/api/settings")
       settings = json.loads(settings_str)["settings"]
       assert settings["common"]["idleTimeout"] == 123456
       assert not settings["paypal"]["enabled"]
+
+      def get_users():
+          users_str = client.succeed("curl --fail https://${serverDomain}/api/user")
+          return json.loads(users_str)["users"]
+
+      assert get_users() == [];
+
+      test_user = {
+        "name": "User",
+        "email": "email@acme.com"
+      }
+      test_user_json = json.dumps(test_user)
+      client.succeed(f"curl --fail -X POST -H 'Content-Type: application/json' -d '{test_user_json}' https://${serverDomain}/api/user")
+
+      assert len(get_users()) == 1;
+
     '';
 }
