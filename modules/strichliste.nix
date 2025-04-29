@@ -81,6 +81,7 @@ in
       ];
       path = [
         finalPackage.php
+        config.services.postgresql.package
       ];
       inherit environment;
       serviceConfig = {
@@ -94,7 +95,10 @@ in
       };
       script = ''
         rm -rf /var/cache/strichliste/*
-        php bin/console doctrine:schema:create
+        TABLE_COUNT=$(psql -c "SELECT COUNT(*) FROM pg_tables WHERE schemaname = 'public';" -d strichliste)
+        if [ "$TABLE_COUNT" -eq 0 ]; then
+          php bin/console doctrine:schema:create
+        fi
       '';
     };
 
