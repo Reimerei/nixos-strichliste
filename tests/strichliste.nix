@@ -74,7 +74,8 @@ in
       test_user_json = json.dumps(test_user)
       client.succeed(f"curl --fail -X POST -H 'Content-Type: application/json' -d '{test_user_json}' https://${serverDomain}/api/user")
 
-      assert len(get_users()) == 1;
-
+      users = get_users()
+      assert len(users) == 1;
+      assert users[0]["name"] == test_user["name"]
     '';
 }
